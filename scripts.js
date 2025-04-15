@@ -23,75 +23,147 @@
  *
  */
 
-const FRESH_PRINCE_URL =
-  "https://upload.wikimedia.org/wikipedia/en/3/33/Fresh_Prince_S1_DVD.jpg";
-const CURB_POSTER_URL =
-  "https://m.media-amazon.com/images/M/MV5BZDY1ZGM4OGItMWMyNS00MDAyLWE2Y2MtZTFhMTU0MGI5ZDFlXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_FMjpg_UX1000_.jpg";
-const EAST_LOS_HIGH_POSTER_URL =
-  "https://static.wikia.nocookie.net/hulu/images/6/64/East_Los_High.jpg";
 
-// This is an array of strings (TV show titles)
-let titles = [
-  "Fresh Prince of Bel Air",
-  "Curb Your Enthusiasm",
-  "East Los High",
-];
-// Your final submission should have much more data than this, and
-// you should use more than just an array of strings to store it all.
+async function getData(){ // The getData() function is async because using the await keyword with
+                          // the fetch function to resolve the returned promise requires that the top level
+                          // module (outer function) be an async type that returs a promise
 
-// This function adds cards the page to display the data in the array
-function showCards() {
-  const cardContainer = document.getElementById("card-container");
-  cardContainer.innerHTML = "";
-  const templateCard = document.querySelector(".card");
+  // fetch(url) called ==> returns a promise, resolves into a response ==> response.json() called to extract
+  // json data ==> if response state is unsuccessful, an error will be thrown
 
-  for (let i = 0; i < titles.length; i++) {
-    let title = titles[i];
-
-    // This part of the code doesn't scale very well! After you add your
-    // own data, you'll need to do something totally different here.
-    let imageURL = "";
-    if (i == 0) {
-      imageURL = FRESH_PRINCE_URL;
-    } else if (i == 1) {
-      imageURL = CURB_POSTER_URL;
-    } else if (i == 2) {
-      imageURL = EAST_LOS_HIGH_POSTER_URL;
-    }
-
-    const nextCard = templateCard.cloneNode(true); // Copy the template card
-    editCardContent(nextCard, title, imageURL); // Edit title and image
-    cardContainer.appendChild(nextCard); // Add new card to the container
+  try{ 
+    // await fetch(url) (asynchronous function), returns promise in fulfilled or rejected state
+    const reponse = await fetch("./us_senators.json");
+    // await response.json(), returns a promise state is fulfilled (json data successfuly extracted) or rejected
+    const data = await response.json(); 
+    console.log(data) // ==> problem, this needs to be accessed outside of the getData() function, and because we used 
+                      // await, the getData() function had to be of type returns a promise rather than a custom value
   }
+  catch(error){
+    console.log("Error in resolving data request or obtaining json formatting. Error: " + error)
+  }
+  
 }
 
-function editCardContent(card, newTitle, newImageURL) {
-  card.style.display = "block";
+// getData();
 
-  const cardHeader = card.querySelector("h2");
-  cardHeader.textContent = newTitle;
+// *************** FETCH DATA ******************
 
-  const cardImage = card.querySelector("img");
-  cardImage.src = newImageURL;
-  cardImage.alt = newTitle + " Poster";
+// {START SEQUENCE} fetch request to url ==>
+  // returns promise (pending, fulfilled) ==>
+  // .then() handles promise and resolves the promise into a response ==>
+  // resopnse is analyzed for errors, if response is failed an Error instance is thrown ==>
+  // error is caught and displayed by .catch() method {END SEQUENCE 1}
+  // otherwise, response.json() is returned, which is a promise-type method as well ==>
+  // in an external function, getJasonData() is called ==>
+  // the response.json() return value is handled as a promise by another .then() method ==>
+  // .then() resolves the promise into a response that is the data in json format ==>
+  // data is manipulated internally depending on use case {END SEQUENCE 2}
 
-  // You can use console.log to help you debug!
-  // View the output by right clicking on your website,
-  // select "Inspect", then click on the "Console" tab
-  console.log("new card:", newTitle, "- html: ", card);
+
+const url = "./us_senators.json";
+
+function getJsonData(){
+ return fetch(url).then(response => {
+  if(!response.ok){ // A Response instance has the boolean property value ok, that returns true if 
+                   // HTTP status code issuccessful (bettween 200 and 299)
+    throw new Error(`Response status code ${response.status}`); // If promise resolves into a failed response, we return an 
+                                                              // Error instance with a specific message to be caught down the chain
+  } // error thrown ==> caught in catch method and handling code is executed
+  console.log(`Successful fetch!`)
+  return response.json() // returning response.json() which itself is a method that returns a promise that resolves 
+                        // into a response ==> must be handled by an other .then() method externally, where we would access 
+                        // the data for different purposes (formatting, filtering, sorting, etc.)           
+ }).catch(error => {console.log(`Fetching data failed ==> ${error}`)}) // Error instance is caught and message is displayed
 }
 
-// This calls the addCards() function when the page is first loaded
-document.addEventListener("DOMContentLoaded", showCards);
 
-function quoteAlert() {
-  console.log("Button Clicked!");
-  alert(
-    "I guess I can kiss heaven goodbye, because it got to be a sin to look this good!"
-  );
+function showCards(){
+  getJsonData().then(data => {
+  console.log(`Json data: ${data}`)
+
+  senatorsArr = data.objects;
+  console.log(senatorsArr)
+})
 }
 
-function removeLastCard() {
-  titles.pop(); // Remove last item in titles array
-  showCards(); // Call showCards again to refresh
-}
+showCards();
+
+
+
+// ************** STARTER CODE *****************
+
+
+// const FRESH_PRINCE_URL =
+//   "https://upload.wikimedia.org/wikipedia/en/3/33/Fresh_Prince_S1_DVD.jpg";
+// const CURB_POSTER_URL =
+//   "https://m.media-amazon.com/images/M/MV5BZDY1ZGM4OGItMWMyNS00MDAyLWE2Y2MtZTFhMTU0MGI5ZDFlXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_FMjpg_UX1000_.jpg";
+// const EAST_LOS_HIGH_POSTER_URL =
+//   "https://static.wikia.nocookie.net/hulu/images/6/64/East_Los_High.jpg";
+
+// // This is an array of strings (TV show titles)
+// let titles = [
+//   "Fresh Prince of Bel Air",
+//   "Curb Your Enthusiasm",
+//   "East Los High",
+// ];
+
+// // Your final submission should have much more data than this, and
+// // you should use more than just an array of strings to store it all.
+
+// // This function adds cards the page to display the data in the array
+// function showCards() {
+//   const cardContainer = document.gsetElementById("card-container");
+//   cardContainer.innerHTML = "";
+//   const templateCard = document.querySelector(".card");
+
+//   for (let i = 0; i < titles.length; i++) {
+//     let title = titles[i];
+
+//     // This part of the code doesn't scale very well! After you add your
+//     // own data, you'll need to do something totally different here.
+//     let imageURL = "";
+//     if (i == 0) {
+//       imageURL = FRESH_PRINCE_URL;
+//     } else if (i == 1) {
+//       imageURL = CURB_POSTER_URL;
+//     } else if (i == 2) {
+//       imageURL = EAST_LOS_HIGH_POSTER_URL;
+//     }
+
+//     const nextCard = templateCard.cloneNode(true); // Copy the template card
+//     editCardContent(nextCard, title, imageURL); // Edit title and image
+//     cardContainer.appendChild(nextCard); // Add new card to the container
+//   }
+// }
+
+// function editCardContent(card, newTitle, newImageURL) {
+//   card.style.display = "block";
+
+//   const cardHeader = card.querySelector("h2");
+//   cardHeader.textContent = newTitle;
+
+//   const cardImage = card.querySelector("img");
+//   cardImage.src = newImageURL;
+//   cardImage.alt = newTitle + " Poster";
+
+//   // You can use console.log to help you debug!
+//   // View the output by right clicking on your website,
+//   // select "Inspect", then click on the "Console" tab
+//   console.log("new card:", newTitle, "- html: ", card);
+// }
+
+// // This calls the addCards() function when the page is first loaded
+// document.addEventListener("DOMContentLoaded", showCards);
+
+// function quoteAlert() {
+//   console.log("Button Clicked!");
+//   alert(
+//     "I guess I can kiss heaven goodbye, because it got to be a sin to look this good!"
+//   );
+// }
+
+// function removeLastCard() {
+//   titles.pop(); // Remove last item in titles array
+//   showCards(); // Call showCards again to refresh
+// }
