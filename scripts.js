@@ -83,26 +83,47 @@ function getJsonData(){
 // We resolve each returned promise separately to extract the Json data and handle it according to the function's purpose.
 
 // *************** CREATE AND DISPLAY CARDS *************
+
 function showAllCards(){
-
-
   // .then() method passes forward data, which is the json data extracted from the previous Fetch request with response.json()
   // a custom callback function will be made to manipulate the json data 
   getJsonData().then(data => {
-    let container = document.getElementById("card-container"); // access card container
-
-
-    console.log(`Json data: ${data}`)
 
     senatorsArr = data.objects; // grabbing array of objects, array length = 100, one for each U.S Senator
+    console.log(`Json data: ${data}`)
 
+    console.log(`There are ${senatorsArr.length} senators in Congress.`)
+    createCardList(senatorsArr); // pass an array with all 100 objects to the createCardList function to display all members of the Senators  
+})
+}
+
+function showRepublicanOnly(){
+  getJsonData().then(data => {
+    senatorsArr = data.objects;
+    senatorsRepArr = [];
+
+    // If the object party property has a value of "Republican", it will be added to a new sorted 
+    // array holding objects of republican senators only.
     for(let i = 0; i < senatorsArr.length; i++){
+      console.log(senatorsArr[i]);
+      if (senatorsArr[i].party == "Republican"){ 
+        senatorsRepArr.push(senatorsArr[i]);
+      }
+    }
 
-      let card = createCard(senatorsArr[i])
+    console.log(`There are ${senatorsRepArr.length} Republican senators in Congress.`)
+
+    createCardList(senatorsRepArr);
+  })
+}
+
+function createCardList(senatorList){
+  let container = document.getElementById("card-container"); // access card container
+    for(let i = 0; i < senatorList.length; i++){
+
+      let card = createCard(senatorList[i])
       container.appendChild(card);
     }
-  
-})
 }
 
 function createCard(senator){
@@ -111,19 +132,22 @@ function createCard(senator){
   let senatorState = senator.state;
   let senatorTimeInOffice = `${senator.startdate} - ${senator.enddate}`;
   let card = document.createElement("div");
-  card.className = "card";
-  if (senatorParty = "Republican"){
-    card.className = "rep";
+  card.classList.add("card");
+  if (senatorParty == "Republican"){
+    card.classList.add("rep");
   }
   else if (senatorParty == "Democrat"){
-    card.className = "dem";
+    card.classList.add("dem");
   }
-  else{card.className = "other";}
+  else{card.classList.add("other");}
 
   let title = document.createElement("h2");
   title.innerHTML = senatorName;
+
   let party = document.createElement("h3");
   party.innerHTML = senatorParty;
+
+  
 
   card.appendChild(title);
   card.appendChild(party);
@@ -131,7 +155,7 @@ function createCard(senator){
   return card;
 }
 
-showAllCards();
+showRepublicanOnly();
 
 
 
