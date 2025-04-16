@@ -1,3 +1,5 @@
+
+
 /**
  * Data Catalog Project Starter Code - SEA Stage 2
  *
@@ -45,7 +47,7 @@ async function getData(){ // The getData() function is async because using the a
   
 }
 
-// getData();
+
 
 // *************** FETCH DATA ******************
 
@@ -77,17 +79,59 @@ function getJsonData(){
  }).catch(error => {console.log(`Fetching data failed ==> ${error}`)}) // Error instance is caught and message is displayed
 }
 
+// Due to the nature of the fetch API, the Json data can't be stored in a single variable unless explicitly defined in JavaScript.
+// We resolve each returned promise separately to extract the Json data and handle it according to the function's purpose.
 
-function showCards(){
+// *************** CREATE AND DISPLAY CARDS *************
+function showAllCards(){
+
+
+  // .then() method passes forward data, which is the json data extracted from the previous Fetch request with response.json()
+  // a custom callback function will be made to manipulate the json data 
   getJsonData().then(data => {
-  console.log(`Json data: ${data}`)
+    let container = document.getElementById("card-container"); // access card container
 
-  senatorsArr = data.objects;
-  console.log(senatorsArr)
+
+    console.log(`Json data: ${data}`)
+
+    senatorsArr = data.objects; // grabbing array of objects, array length = 100, one for each U.S Senator
+
+    for(let i = 0; i < senatorsArr.length; i++){
+
+      let card = createCard(senatorsArr[i])
+      container.appendChild(card);
+    }
+  
 })
 }
 
-showCards();
+function createCard(senator){
+  let senatorName = `${senator.person.firstname} ${senator.person.lastname}`;
+  let senatorParty = senator.party;
+  let senatorState = senator.state;
+  let senatorTimeInOffice = `${senator.startdate} - ${senator.enddate}`;
+  let card = document.createElement("div");
+  card.className = "card";
+  if (senatorParty = "Republican"){
+    card.className = "rep";
+  }
+  else if (senatorParty == "Democrat"){
+    card.className = "dem";
+  }
+  else{card.className = "other";}
+
+  let title = document.createElement("h2");
+  title.innerHTML = senatorName;
+  let party = document.createElement("h3");
+  party.innerHTML = senatorParty;
+
+  card.appendChild(title);
+  card.appendChild(party);
+
+  return card;
+}
+
+showAllCards();
 
 
 
