@@ -4,7 +4,6 @@
     <title>LA TV Shows | Home</title>
     <meta name="description" content="A Catalog of Shows Set in Los Angeles" />
     <link rel="stylesheet" href="style.css" />
-    <script type="text/javascript" src="scripts.js"></script>
 
     <!-- Font Links -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +48,7 @@
           <option value="no-sort" class="no-sort">None</option>
           <option value="Republican" id="rep-only">Republican</option>
           <option value="Democrat" id="dem-only">Democrat</option>
-          <option value="Independent" id="">Independent</option>
+          <option value="Independent" id="ind-only">Independent</option>
         </select>
       </div>
 
@@ -58,7 +57,7 @@
         <select class="sort-dropdown" name="date-sort-options">
           <option value ="no-sort" class="no-sort">None</option>
           <option value="start">Sort by Date of Entry (Earliest)</option>
-          <option value="start">Sort by Date of Exit (Soonest)</option>
+          <option value="end">Sort by Date of Exit (Soonest)</option>
 
         </select>
       </div>
@@ -76,7 +75,6 @@
     </div>
 
     <div id="card-container">
-
       <!-- <div class="card rep">
         <h2>Senator Name</h2>
         <h3>State</h3>
@@ -100,5 +98,6 @@
     </div>
 
     
+    <script type="text/javascript" src="scripts.js"></script>
   </body>
 </html>

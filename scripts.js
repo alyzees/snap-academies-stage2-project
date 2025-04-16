@@ -47,7 +47,7 @@ async function getData(){ // The getData() function is async because using the a
   
 }
 
-
+document.addEventListener("DOMContentLoaded", () => {
 
 // *************** FETCH DATA ******************
 
@@ -127,6 +127,16 @@ function createCardList(senatorList){
     }
 }
 
+function clearCardList(){
+  let container = document.getElementById("card-container"); 
+
+  while (container.children.length > 0){
+    let card = container.firstChild;
+    container.removeChild(card); // Remove all child elements 
+  }
+  // console.log(container.children);
+}
+
 function createCard(senator){
   let senatorName = `${senator.person.firstname} ${senator.person.lastname}`;
   let senatorParty = senator.party;
@@ -175,11 +185,27 @@ function createCard(senator){
   return card;
 }
 
-showByParty("Republican");
+// showByParty("Republican");
 // showByParty("Democrat");
 // showByParty("Independent");
 
+// clearCardList();
+function testFunction(){
 
+  console.log("clicked");
+}
+
+
+let partySort = document.getElementById("party-sort-options");
+
+console.log(partySort)
+partySort.addEventListener("change", () => {
+
+  console.log("Change occured!");
+
+})
+
+})
 
 // ************** STARTER CODE *****************
 
