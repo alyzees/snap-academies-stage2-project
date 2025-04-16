@@ -1,3 +1,5 @@
+
+
 /**
  * Data Catalog Project Starter Code - SEA Stage 2
  *
@@ -45,7 +47,7 @@ async function getData(){ // The getData() function is async because using the a
   
 }
 
-// getData();
+document.addEventListener("DOMContentLoaded", () => {
 
 // *************** FETCH DATA ******************
 
@@ -77,19 +79,133 @@ function getJsonData(){
  }).catch(error => {console.log(`Fetching data failed ==> ${error}`)}) // Error instance is caught and message is displayed
 }
 
+// Due to the nature of the fetch API, the Json data can't be stored in a single variable unless explicitly defined in JavaScript.
+// We resolve each returned promise separately to extract the Json data and handle it according to the function's purpose.
 
-function showCards(){
+// *************** CREATE AND DISPLAY CARDS *************
+
+function showAllCards(){
+  // .then() method passes forward data, which is the json data extracted from the previous Fetch request with response.json()
+  // a custom callback function will be made to manipulate the json data 
   getJsonData().then(data => {
-  console.log(`Json data: ${data}`)
 
-  senatorsArr = data.objects;
-  console.log(senatorsArr)
+    senatorsArr = data.objects; // grabbing array of objects, array length = 100, one for each U.S Senator
+    console.log(`Json data: ${data}`)
+
+    console.log(`There are ${senatorsArr.length} senators in Congress.`)
+    createCardList(senatorsArr); // pass an array with all 100 objects to the createCardList function to display all members of the Senators  
 })
 }
 
-showCards();
+function showByParty(partyName){
+  getJsonData().then(data => {
+    senatorsArr = data.objects;
+    senatorsRepArr = [];
+
+    // If the object party property has a value of a specific party ("Republican", "Democrat"), it will
+    // be added to a new sorted array holding senator objects from just that party.
+    for(let i = 0; i < senatorsArr.length; i++){
+      
+      if (senatorsArr[i].party == partyName){ 
+        senatorsRepArr.push(senatorsArr[i]);
+      }
+    }
+
+    console.log(`There are ${senatorsRepArr.length} ${partyName} senators in Congress.`)
+
+    createCardList(senatorsRepArr); // Create list of cards from the shortened array of senator objects sorted by party.
+  })
+}
 
 
+function createCardList(senatorList){
+  let container = document.getElementById("card-container"); // access card container
+    for(let i = 0; i < senatorList.length; i++){
+
+      let card = createCard(senatorList[i])
+      container.appendChild(card); // append card to container
+    }
+}
+
+function clearCardList(){
+  let container = document.getElementById("card-container"); 
+
+  while (container.children.length > 0){
+    let card = container.firstChild;
+    container.removeChild(card); // Remove all child elements 
+  }
+  // console.log(container.children);
+}
+
+function createCard(senator){
+  let senatorName = `${senator.person.firstname} ${senator.person.lastname}`;
+  let senatorParty = senator.party;
+  let senatorState = senator.state;
+  let senatorTimeInOffice = `${senator.startdate} - ${senator.enddate}`;
+  let senatorWebLink = senator.website;
+
+  let card = document.createElement("div");
+  card.classList.add("card");
+  if (senatorParty == "Republican"){
+    card.classList.add("rep");
+  }
+  else if (senatorParty == "Democrat"){
+    card.classList.add("dem");
+  }
+  else{card.classList.add("other");}
+
+  let title = document.createElement("h2");
+  title.innerHTML = senatorName;
+
+  let party = document.createElement("h3");
+  party.innerHTML = senatorParty;
+
+  let state = document.createElement("p");
+  state.innerHTML = senatorState;
+  state.classList.add("state");
+  
+  let office = document.createElement("p");
+  office.innerHTML = senatorTimeInOffice;
+  office.classList.add("office");
+
+  let websiteBtn = document.createElement("a");
+  websiteBtn.setAttribute("href", senatorWebLink);
+  websiteBtn.setAttribute("target", "_blank");
+  websiteBtn.classList.add("btn");
+  websiteBtn.innerHTML = "Website"
+
+  
+  // Append all components to card div
+  card.appendChild(title);
+  card.appendChild(party);
+  card.appendChild(state);
+  card.appendChild(office);
+  card.appendChild(websiteBtn)
+
+  return card;
+}
+
+// showByParty("Republican");
+// showByParty("Democrat");
+// showByParty("Independent");
+
+// clearCardList();
+function testFunction(){
+
+  console.log("clicked");
+}
+
+
+let partySort = document.getElementById("party-sort-options");
+
+console.log(partySort)
+partySort.addEventListener("change", () => {
+
+  console.log("Change occured!");
+
+})
+
+})
 
 // ************** STARTER CODE *****************
 

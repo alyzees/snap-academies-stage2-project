@@ -4,11 +4,18 @@
     <title>LA TV Shows | Home</title>
     <meta name="description" content="A Catalog of Shows Set in Los Angeles" />
     <link rel="stylesheet" href="style.css" />
-    <script type="text/javascript" src="scripts.js"></script>
+
+    <!-- Font Links -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
   </head>
 
   <body>
-    <header class="main-header">
+
+    <!-- //////////////// STARTER HTML ////////////////-->
+
+    <!-- <header class="main-header">
       <h1 class="title">LA TV Shows</h1>
     </header>
     <div id="card-container"></div>
@@ -26,6 +33,71 @@
     <div class="footer">
       <button onclick="quoteAlert();">Get A Quote!</button>
       <button onclick="removeLastCard();">Remove A Card!</button>
+    </div> -->
+
+    <div id="header">
+      <h1>United States Senators</h1>
+      <img src="./usa-map.png" id="usa-map">
     </div>
+
+    <div id="sort-options">
+
+      <div id="party-sort">
+        <h2>Sort by poltical party</h2>
+        <select class="sort-dropdown" name="party-sort-options">
+          <option value="no-sort" class="no-sort">None</option>
+          <option value="Republican" id="rep-only">Republican</option>
+          <option value="Democrat" id="dem-only">Democrat</option>
+          <option value="Independent" id="ind-only">Independent</option>
+        </select>
+      </div>
+
+      <div id="date-sort">
+        <h2>Sort by time in office</h2>
+        <select class="sort-dropdown" name="date-sort-options">
+          <option value ="no-sort" class="no-sort">None</option>
+          <option value="start">Sort by Date of Entry (Earliest)</option>
+          <option value="end">Sort by Date of Exit (Soonest)</option>
+
+        </select>
+      </div>
+
+      <div id="name-sort">
+        <h2>Sort alphabetically</h2>
+        <select class="sort-dropdown" name="date-sort-options">
+          <option value ="no-sort" class="no-sort">None</option>
+          <option value="first-name">Sort by First Name (A-Z)</option>
+          <option value="last-name">Sort by Last Name (A-Z)</option>
+
+        </select>
+      </div>
+
+    </div>
+
+    <div id="card-container">
+      <!-- <div class="card rep">
+        <h2>Senator Name</h2>
+        <h3>State</h3>
+        <a href="" class="btn">Site Link</a>
+      </div>
+
+      <div class="card rep">
+        <h2>Senator Name</h2>
+        <h3>State</h3>
+        <a href="" class="btn">Site Link</a>
+      </div>
+
+      <div class="card rep">
+        <h2>Senator Name</h2>
+        <h3>State</h3>
+        <a href="" class="btn">Site Link</a>
+      </div> -->
+
+      
+
+    </div>
+
+    
+    <script type="text/javascript" src="scripts.js"></script>
   </body>
 </html>
