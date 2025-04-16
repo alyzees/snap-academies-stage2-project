@@ -97,32 +97,33 @@ function showAllCards(){
 })
 }
 
-function showRepublicanOnly(){
+function showByParty(partyName){
   getJsonData().then(data => {
     senatorsArr = data.objects;
     senatorsRepArr = [];
 
-    // If the object party property has a value of "Republican", it will be added to a new sorted 
-    // array holding objects of republican senators only.
+    // If the object party property has a value of a specific party ("Republican", "Democrat"), it will
+    // be added to a new sorted array holding senator objects from just that party.
     for(let i = 0; i < senatorsArr.length; i++){
-      console.log(senatorsArr[i]);
-      if (senatorsArr[i].party == "Republican"){ 
+      
+      if (senatorsArr[i].party == partyName){ 
         senatorsRepArr.push(senatorsArr[i]);
       }
     }
 
-    console.log(`There are ${senatorsRepArr.length} Republican senators in Congress.`)
+    console.log(`There are ${senatorsRepArr.length} ${partyName} senators in Congress.`)
 
-    createCardList(senatorsRepArr);
+    createCardList(senatorsRepArr); // Create list of cards from the shortened array of senator objects sorted by party.
   })
 }
+
 
 function createCardList(senatorList){
   let container = document.getElementById("card-container"); // access card container
     for(let i = 0; i < senatorList.length; i++){
 
       let card = createCard(senatorList[i])
-      container.appendChild(card);
+      container.appendChild(card); // append card to container
     }
 }
 
@@ -131,6 +132,8 @@ function createCard(senator){
   let senatorParty = senator.party;
   let senatorState = senator.state;
   let senatorTimeInOffice = `${senator.startdate} - ${senator.enddate}`;
+  let senatorWebLink = senator.website;
+
   let card = document.createElement("div");
   card.classList.add("card");
   if (senatorParty == "Republican"){
@@ -147,15 +150,34 @@ function createCard(senator){
   let party = document.createElement("h3");
   party.innerHTML = senatorParty;
 
+  let state = document.createElement("p");
+  state.innerHTML = senatorState;
+  state.classList.add("state");
   
+  let office = document.createElement("p");
+  office.innerHTML = senatorTimeInOffice;
+  office.classList.add("office");
 
+  let websiteBtn = document.createElement("a");
+  websiteBtn.setAttribute("href", senatorWebLink);
+  websiteBtn.setAttribute("target", "_blank");
+  websiteBtn.classList.add("btn");
+  websiteBtn.innerHTML = "Website"
+
+  
+  // Append all components to card div
   card.appendChild(title);
   card.appendChild(party);
+  card.appendChild(state);
+  card.appendChild(office);
+  card.appendChild(websiteBtn)
 
   return card;
 }
 
-showRepublicanOnly();
+showByParty("Republican");
+// showByParty("Democrat");
+// showByParty("Independent");
 
 
 

@@ -21,11 +21,15 @@ body {
 #card-container {
   display: flex;
   justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
   margin: 20px;
+
 }
 
 .card {
-  width: 300px;
+  width: 350px;
+  padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -51,6 +55,7 @@ body {
   margin: 5px;
 }
 
+/* 
 .card-content {
   padding: 20px;
   font-family: "Verdana";
@@ -86,4 +91,4 @@ button {
   font-size: 22px;
   cursor: pointer;
   margin: 5px;
-}
+} */
