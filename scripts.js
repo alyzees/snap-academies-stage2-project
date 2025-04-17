@@ -26,26 +26,26 @@
  */
 
 
-async function getData(){ // The getData() function is async because using the await keyword with
-                          // the fetch function to resolve the returned promise requires that the top level
-                          // module (outer function) be an async type that returs a promise
+// async function getData(){ // The getData() function is async because using the await keyword with
+//                           // the fetch function to resolve the returned promise requires that the top level
+//                           // module (outer function) be an async type that returs a promise
 
-  // fetch(url) called ==> returns a promise, resolves into a response ==> response.json() called to extract
-  // json data ==> if response state is unsuccessful, an error will be thrown
+//   // fetch(url) called ==> returns a promise, resolves into a response ==> response.json() called to extract
+//   // json data ==> if response state is unsuccessful, an error will be thrown
 
-  try{ 
-    // await fetch(url) (asynchronous function), returns promise in fulfilled or rejected state
-    const reponse = await fetch("./us_senators.json");
-    // await response.json(), returns a promise state is fulfilled (json data successfuly extracted) or rejected
-    const data = await response.json(); 
-    console.log(data) // ==> problem, this needs to be accessed outside of the getData() function, and because we used 
-                      // await, the getData() function had to be of type returns a promise rather than a custom value
-  }
-  catch(error){
-    console.log("Error in resolving data request or obtaining json formatting. Error: " + error)
-  }
+//   try{ 
+//     // await fetch(url) (asynchronous function), returns promise in fulfilled or rejected state
+//     const reponse = await fetch("./us_senators.json");
+//     // await response.json(), returns a promise state is fulfilled (json data successfuly extracted) or rejected
+//     const data = await response.json(); 
+//     console.log(data) // ==> problem, this needs to be accessed outside of the getData() function, and because we used 
+//                       // await, the getData() function had to be of type returns a promise rather than a custom value
+//   }
+//   catch(error){
+//     console.log("Error in resolving data request or obtaining json formatting. Error: " + error)
+//   }
   
-}
+// }
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -134,7 +134,6 @@ function clearCardList(){
     let card = container.firstChild;
     container.removeChild(card); // Remove all child elements 
   }
-  // console.log(container.children);
 }
 
 function createCard(senator){
@@ -196,16 +195,32 @@ function testFunction(){
 }
 
 
-let partySort = document.getElementById("party-sort-options");
+let partySort = document.getElementById("party-sort-dropdown");
+//let dateSort = document.getElementById();
 
-console.log(partySort)
-partySort.addEventListener("change", () => {
+console.log(partySort);
+
+partySort.addEventListener("change", (event) => {
+
+  clearCardList();
+  let party = event.target.value;
 
   console.log("Change occured!");
+  console.log(`Event sent by target ${event.target} with value "${event.target.value}"`)
+
+  if(party != "no-sort"){
+    showByParty(party);
+  }
+  else{
+    showAllCards();
+  }
 
 })
 
+showAllCards();
 })
+
+
 
 // ************** STARTER CODE *****************
 
