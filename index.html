@@ -4,7 +4,7 @@
     <title>LA TV Shows | Home</title>
     <meta name="description" content="A Catalog of Shows Set in Los Angeles" />
     <link rel="stylesheet" href="style.css" />
-
+    <script type="text/javascript" src="scripts.js"></script>
     <!-- Font Links -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,17 +54,19 @@
 
       <div id="date-sort">
         <h2>Sort by time in office</h2>
-        <select class="sort-dropdown" name="date-sort-options">
+        <select class="sort-dropdown" id="date-sort-dropdown" name="date-sort-options">
           <option value ="no-sort" class="no-sort">None</option>
-          <option value="start">Sort by Date of Entry (Earliest)</option>
-          <option value="end">Sort by Date of Exit (Soonest)</option>
+          <option value="earliest-start">Sort by Earliest Date of Entry</option>
+          <option value="latest-start">Sort by Latest Date of Entry</option>
+          <option value="earliest-end">Sort by Earliest Date of Exit</option>
+          <option value="latest-end">Sort by Latest Date of Exit</option>
 
         </select>
       </div>
 
       <div id="name-sort">
         <h2>Sort alphabetically</h2>
-        <select class="sort-dropdown" name="date-sort-options">
+        <select class="sort-dropdown" id="alpha-sort-dropdown" name="alpha-sort-options">
           <option value ="no-sort" class="no-sort">None</option>
           <option value="first-name">Sort by First Name (A-Z)</option>
           <option value="last-name">Sort by Last Name (A-Z)</option>
@@ -96,8 +98,5 @@
       
 
     </div>
-
-    
-    <script type="text/javascript" src="scripts.js"></script>
   </body>
 </html>

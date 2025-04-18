@@ -47,177 +47,229 @@
   
 // }
 
+// Load JavaScript after all elements in the Document Object Model have loaded, this prevents
+// refercing non-existing elements and getting null values.
 document.addEventListener("DOMContentLoaded", () => {
 
-// *************** FETCH DATA ******************
+  function DateObj(dateStr){
+    // get month, day, and year by splicing string
+    // senator.startdate and senator.enddate parameter are in "YYYY-MM-DD" format
+    this.year = parseInt(dateStr.slice(0,4)); // first four characters
+    this.month = parseInt(dateStr.slice(5,7)); // middle two characters
+    this.day = parseInt(dateStr.slice(8)); // last two characters
+    this.getYear = function (){
+      return this.year;
+    }
+    this.getMonth = function(){
+      return this.month;
+    }
+    this.getEngMonth = function(){
+      let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+      let monthIndx = this.month - 1; // 0 based indexing
+      return months[monthIndx];
+    }
+    this.getDay = function(){
+      return this.day;
+    }
+    this.getDate = function(){
+       return `${dateObj.getMonth()}/${dateObj.getDay()}/${dateObj.getYear()}`;
+    }
+    this.getEngDate = function(){
+      return `${dateObj.getEngMonth()} ${dateObj.getDay()}, ${dateObj.getYear()}`;
+   }
+  }
 
-// {START SEQUENCE} fetch request to url ==>
-  // returns promise (pending, fulfilled) ==>
-  // .then() handles promise and resolves the promise into a response ==>
-  // resopnse is analyzed for errors, if response is failed an Error instance is thrown ==>
-  // error is caught and displayed by .catch() method {END SEQUENCE 1}
-  // otherwise, response.json() is returned, which is a promise-type method as well ==>
-  // in an external function, getJasonData() is called ==>
-  // the response.json() return value is handled as a promise by another .then() method ==>
-  // .then() resolves the promise into a response that is the data in json format ==>
-  // data is manipulated internally depending on use case {END SEQUENCE 2}
+  let dateObj = new DateObj("2021-01-03");
+  
+  function testFunction(){
+    console.log("clicked");
+  }
 
 
-const url = "./us_senators.json";
+  // console.log(dateObj.getEngDate());
+  // console.log(dateObj.getDate());
 
-function getJsonData(){
- return fetch(url).then(response => {
-  if(!response.ok){ // A Response instance has the boolean property value ok, that returns true if 
-                   // HTTP status code issuccessful (bettween 200 and 299)
-    throw new Error(`Response status code ${response.status}`); // If promise resolves into a failed response, we return an 
-                                                              // Error instance with a specific message to be caught down the chain
-  } // error thrown ==> caught in catch method and handling code is executed
-  console.log(`Successful fetch!`)
-  return response.json() // returning response.json() which itself is a method that returns a promise that resolves 
-                        // into a response ==> must be handled by an other .then() method externally, where we would access 
-                        // the data for different purposes (formatting, filtering, sorting, etc.)           
- }).catch(error => {console.log(`Fetching data failed ==> ${error}`)}) // Error instance is caught and message is displayed
-}
 
-// Due to the nature of the fetch API, the Json data can't be stored in a single variable unless explicitly defined in JavaScript.
-// We resolve each returned promise separately to extract the Json data and handle it according to the function's purpose.
 
-// *************** CREATE AND DISPLAY CARDS *************
+  // *************** FETCH DATA ******************
 
-function showAllCards(){
-  // .then() method passes forward data, which is the json data extracted from the previous Fetch request with response.json()
-  // a custom callback function will be made to manipulate the json data 
-  getJsonData().then(data => {
+  /* ***** HOW FETCHING JSON DATA WORKS ******
+  {START SEQUENCE} 
+  (1) fetch request to url ==>
+  (2) returns promise (pending, fulfilled) ==>
+  (3) .then() handles promise and resolves the promise into a response ==>
+  (4) resopnse is analyzed for errors, if response is failed an Error instance is thrown ==>
+  (5) error is caught and displayed by .catch() method 
+  {END SEQUENCE 1}
+  (6) otherwise, response.json() is returned, which is a promise-type method as well ==>
+  (7) in an external function, getJasonData() is called ==>
+  (8) the response.json() return value is handled as a promise by another .then() method ==>
+  (9) .then() resolves the promise into a response that is the data in json format ==>
+  (10) data is manipulated internally depending on use case 
+  {END SEQUENCE 2}
+  **************/
 
-    senatorsArr = data.objects; // grabbing array of objects, array length = 100, one for each U.S Senator
-    console.log(`Json data: ${data}`)
+  const url = "./us_senators.json";
 
-    console.log(`There are ${senatorsArr.length} senators in Congress.`)
-    createCardList(senatorsArr); // pass an array with all 100 objects to the createCardList function to display all members of the Senators  
-})
-}
+  function getJsonData(){
+  return fetch(url).then(response => {
+    if(!response.ok){ // A Response instance has the boolean property value ok, that returns true if 
+                    // HTTP status code issuccessful (bettween 200 and 299)
+      throw new Error(`Response status code ${response.status}`); // If promise resolves into a failed response, we return an 
+                                                                // Error instance with a specific message to be caught down the chain
+    } // error thrown ==> caught in catch method and handling code is executed
+    console.log(`Successful fetch!`)
+    return response.json() // returning response.json() which itself is a method that returns a promise that resolves 
+                          // into a response ==> must be handled by an other .then() method externally, where we would access 
+                          // the data for different purposes (formatting, filtering, sorting, etc.)           
+  }).catch(error => {console.log(`Fetching data failed ==> ${error}`)}) // Error instance is caught and message is displayed
+  }
 
-function showByParty(partyName){
-  getJsonData().then(data => {
-    senatorsArr = data.objects;
-    senatorsRepArr = [];
+  // Due to the nature of the fetch API, the Json data can't be stored in a single variable unless explicitly defined in JavaScript.
+  // We resolve each returned promise separately to extract the Json data and handle it according to the function's purpose.
 
-    // If the object party property has a value of a specific party ("Republican", "Democrat"), it will
-    // be added to a new sorted array holding senator objects from just that party.
-    for(let i = 0; i < senatorsArr.length; i++){
-      
-      if (senatorsArr[i].party == partyName){ 
-        senatorsRepArr.push(senatorsArr[i]);
+  // *************** CREATE AND DISPLAY CARDS *************
+
+  function createCard(senator){
+    let senatorName = `${senator.person.firstname} ${senator.person.lastname}`;
+    let senatorParty = senator.party;
+    let senatorState = senator.state;
+    let senatorTimeInOffice = `${senator.startdate} - ${senator.enddate}`;
+    let senatorWebLink = senator.website;
+
+    let card = document.createElement("div");
+    card.classList.add("card");
+    if (senatorParty == "Republican"){
+      card.classList.add("rep");
+    }
+    else if (senatorParty == "Democrat"){
+      card.classList.add("dem");
+    }
+    else{card.classList.add("ind");}
+
+    let title = document.createElement("h2");
+    title.innerHTML = senatorName;
+
+    let party = document.createElement("h3");
+    party.innerHTML = senatorParty;
+
+    let state = document.createElement("p");
+    state.innerHTML = senatorState;
+    state.classList.add("state");
+    
+    let office = document.createElement("p");
+    office.innerHTML = senatorTimeInOffice;
+    office.classList.add("office");
+
+    let websiteBtn = document.createElement("a");
+    websiteBtn.setAttribute("href", senatorWebLink);
+    websiteBtn.setAttribute("target", "_blank");
+    websiteBtn.classList.add("btn");
+    websiteBtn.innerHTML = "Website"
+    
+    // Append all components to card div
+    card.appendChild(title);
+    card.appendChild(party);
+    card.appendChild(state);
+    card.appendChild(office);
+    card.appendChild(websiteBtn)
+
+    return card;
+  }
+
+  function createCardList(senatorList){
+    let container = document.getElementById("card-container"); // access card container
+      for(let i = 0; i < senatorList.length; i++){
+
+        let card = createCard(senatorList[i])
+        container.appendChild(card); // append card to container
       }
+  }
+
+  function clearCardList(){
+    let container = document.getElementById("card-container"); 
+
+    while (container.children.length > 0){
+      let card = container.firstChild;
+      container.removeChild(card); // Remove all child elements 
     }
+  }
 
-    console.log(`There are ${senatorsRepArr.length} ${partyName} senators in Congress.`)
+  // *** Default, all cards are shown, entire data array is passed through the createCardList() function ***
+  function showAllCards(){
+    // .then() method passes forward data, which is the json data extracted from the previous Fetch request with response.json()
+    // a custom callback function will be made to manipulate the json data 
+    getJsonData().then(data => {
 
-    createCardList(senatorsRepArr); // Create list of cards from the shortened array of senator objects sorted by party.
+      senatorsArr = data.objects; // grabbing array of objects, array length = 100, one for each U.S Senator
+      console.log(`Json data: ${data}`)
+
+      console.log(`There are ${senatorsArr.length} senators in Congress.`)
+      createCardList(senatorsArr); // pass an array with all 100 objects to the createCardList function to display all members of the Senators  
   })
-}
+  }
 
+  /* *********** FILTERING AND SORTING FUNCTIONS ************ */
 
-function createCardList(senatorList){
-  let container = document.getElementById("card-container"); // access card container
-    for(let i = 0; i < senatorList.length; i++){
+  let partySort = document.getElementById("party-sort-dropdown");
+  let dateSort = document.getElementById("date-sort-dropdown");
+  let alphaSort = document.getElementById("date-sort-dropdown");
+  console.log(dateSort);
+  
 
-      let card = createCard(senatorList[i])
-      container.appendChild(card); // append card to container
+  // ***** SORT BY POLITICAL PARTY *****
+
+  function showByParty(partyName){
+    getJsonData().then(data => {
+      senatorsArr = data.objects;
+      senatorsRepArr = [];
+
+      // If the object party property has a value of a specific party ("Republican", "Democrat"), it will
+      // be added to a new sorted array holding senator objects from just that party.
+      for(let i = 0; i < senatorsArr.length; i++){
+        
+        if (senatorsArr[i].party == partyName){ 
+          senatorsRepArr.push(senatorsArr[i]);
+        }
+      }
+
+      console.log(`There are ${senatorsRepArr.length} ${partyName} senators in Congress.`)
+
+      createCardList(senatorsRepArr); // Create list of cards from the shortened array of senator objects sorted by party.
+    })
+  }
+
+  partySort.addEventListener("change", (event) => {
+
+    clearCardList(); // clear the card list to reset the container space, 
+                    // cards will be displayed by party only
+
+    let party = event.target.value;
+
+    // console.log("Change occured!");
+    // console.log(`Event sent by target ${event.target} with value "${event.target.value}"`)
+
+    if(party != "no-sort"){
+      showByParty(party); // use value of option tags to call 
     }
-}
+    else{
+      showAllCards(); // "no-sort" value selected, resets to default
+    }
+  })
 
-function clearCardList(){
-  let container = document.getElementById("card-container"); 
 
-  while (container.children.length > 0){
-    let card = container.firstChild;
-    container.removeChild(card); // Remove all child elements 
+  // **** SORT BY DATE **** 
+
+  function showFromEarliestDate(){
+
   }
-}
 
-function createCard(senator){
-  let senatorName = `${senator.person.firstname} ${senator.person.lastname}`;
-  let senatorParty = senator.party;
-  let senatorState = senator.state;
-  let senatorTimeInOffice = `${senator.startdate} - ${senator.enddate}`;
-  let senatorWebLink = senator.website;
+  //dateSort.addEventListener();
 
-  let card = document.createElement("div");
-  card.classList.add("card");
-  if (senatorParty == "Republican"){
-    card.classList.add("rep");
-  }
-  else if (senatorParty == "Democrat"){
-    card.classList.add("dem");
-  }
-  else{card.classList.add("other");}
-
-  let title = document.createElement("h2");
-  title.innerHTML = senatorName;
-
-  let party = document.createElement("h3");
-  party.innerHTML = senatorParty;
-
-  let state = document.createElement("p");
-  state.innerHTML = senatorState;
-  state.classList.add("state");
-  
-  let office = document.createElement("p");
-  office.innerHTML = senatorTimeInOffice;
-  office.classList.add("office");
-
-  let websiteBtn = document.createElement("a");
-  websiteBtn.setAttribute("href", senatorWebLink);
-  websiteBtn.setAttribute("target", "_blank");
-  websiteBtn.classList.add("btn");
-  websiteBtn.innerHTML = "Website"
+  showAllCards();
 
   
-  // Append all components to card div
-  card.appendChild(title);
-  card.appendChild(party);
-  card.appendChild(state);
-  card.appendChild(office);
-  card.appendChild(websiteBtn)
 
-  return card;
-}
-
-// showByParty("Republican");
-// showByParty("Democrat");
-// showByParty("Independent");
-
-// clearCardList();
-function testFunction(){
-
-  console.log("clicked");
-}
-
-
-let partySort = document.getElementById("party-sort-dropdown");
-//let dateSort = document.getElementById();
-
-console.log(partySort);
-
-partySort.addEventListener("change", (event) => {
-
-  clearCardList();
-  let party = event.target.value;
-
-  console.log("Change occured!");
-  console.log(`Event sent by target ${event.target} with value "${event.target.value}"`)
-
-  if(party != "no-sort"){
-    showByParty(party);
-  }
-  else{
-    showAllCards();
-  }
-
-})
-
-showAllCards();
 })
 
 
