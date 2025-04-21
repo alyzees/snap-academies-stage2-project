@@ -1,5 +1,6 @@
 
 
+// ******************** INSTRUCTIONS **********************
 /**
  * Data Catalog Project Starter Code - SEA Stage 2
  *
@@ -26,68 +27,93 @@
  */
 
 
-// async function getData(){ // The getData() function is async because using the await keyword with
-//                           // the fetch function to resolve the returned promise requires that the top level
-//                           // module (outer function) be an async type that returs a promise
+// ********************* OLD CODE NOT USED ***************************
 
-//   // fetch(url) called ==> returns a promise, resolves into a response ==> response.json() called to extract
-//   // json data ==> if response state is unsuccessful, an error will be thrown
+  // Create Date objects to sort numerically.
 
-//   try{ 
-//     // await fetch(url) (asynchronous function), returns promise in fulfilled or rejected state
-//     const reponse = await fetch("./us_senators.json");
-//     // await response.json(), returns a promise state is fulfilled (json data successfuly extracted) or rejected
-//     const data = await response.json(); 
-//     console.log(data) // ==> problem, this needs to be accessed outside of the getData() function, and because we used 
-//                       // await, the getData() function had to be of type returns a promise rather than a custom value
-//   }
-//   catch(error){
-//     console.log("Error in resolving data request or obtaining json formatting. Error: " + error)
-//   }
-  
-// }
+  // function DateObj(dateStr){
+  //   // get month, day, and year by splicing string
+  //   // senator.startdate and senator.enddate parameter are in "YYYY-MM-DD" format
+  //   this.year = parseInt(dateStr.slice(0,4)); // first four characters
+  //   this.month = parseInt(dateStr.slice(5,7)); // middle two characters
+  //   this.day = parseInt(dateStr.slice(8)); // last two characters
+  //   this.getYear = function (){
+  //     return this.year;
+  //   }
+  //   this.getMonth = function(){
+  //     return this.month;
+  //   }
+  //   this.getEngMonth = function(){
+  //     let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  //     let monthIndx = this.month - 1; // 0 based indexing
+  //     return months[monthIndx];
+  //   }
+  //   this.getDay = function(){
+  //     return this.day;
+  //   }
+  //   this.getDate = function(){
+  //      return `${dateObj.getMonth()}/${dateObj.getDay()}/${dateObj.getYear()}`;
+  //   }
+  //   this.getEngDate = function(){
+  //     return `${dateObj.getEngMonth()} ${dateObj.getDay()}, ${dateObj.getYear()}`;
+  //  }
+  // }
 
-// Load JavaScript after all elements in the Document Object Model have loaded, this prevents
-// refercing non-existing elements and getting null values.
+  // let dateObj = new DateObj("2021-01-03");
+
+  // Fetch JSON data
+
+  // async function getData(){ // The getData() function is async because using the await keyword with
+  //                           // the fetch function to resolve the returned promise requires that the top level
+  //                           // module (outer function) be an async type that returs a promise
+
+  //   // fetch(url) called ==> returns a promise, resolves into a response ==> response.json() called to extract
+  //   // json data ==> if response state is unsuccessful, an error will be thrown
+
+  //   try{ 
+  //     // await fetch(url) (asynchronous function), returns promise in fulfilled or rejected state
+  //     const reponse = await fetch("./us_senators.json");
+  //     // await response.json(), returns a promise state is fulfilled (json data successfuly extracted) or rejected
+  //     const data = await response.json(); 
+  //     console.log(data) // ==> problem, this needs to be accessed outside of the getData() function, and because we used 
+  //                       // await, the getData() function had to be of type returns a promise rather than a custom value
+  //   }
+  //   catch(error){
+  //     console.log("Error in resolving data request or obtaining json formatting. Error: " + error)
+  //   }
+    
+  // }
+
+
+
+// ********************* START OF CODE *************************
+// Load JavaScript after all elements in the Document Object Model have 
+// loaded, this prevents refercing non-existing elements and getting null values.
+
 document.addEventListener("DOMContentLoaded", () => {
-
-  function DateObj(dateStr){
-    // get month, day, and year by splicing string
-    // senator.startdate and senator.enddate parameter are in "YYYY-MM-DD" format
-    this.year = parseInt(dateStr.slice(0,4)); // first four characters
-    this.month = parseInt(dateStr.slice(5,7)); // middle two characters
-    this.day = parseInt(dateStr.slice(8)); // last two characters
-    this.getYear = function (){
-      return this.year;
-    }
-    this.getMonth = function(){
-      return this.month;
-    }
-    this.getEngMonth = function(){
-      let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-      let monthIndx = this.month - 1; // 0 based indexing
-      return months[monthIndx];
-    }
-    this.getDay = function(){
-      return this.day;
-    }
-    this.getDate = function(){
-       return `${dateObj.getMonth()}/${dateObj.getDay()}/${dateObj.getYear()}`;
-    }
-    this.getEngDate = function(){
-      return `${dateObj.getEngMonth()} ${dateObj.getDay()}, ${dateObj.getYear()}`;
-   }
-  }
-
-  let dateObj = new DateObj("2021-01-03");
   
-  function testFunction(){
-    console.log("clicked");
+  // Opted to use functions to get and format date infromation from each senator obejct rather than creating a parallel
+  // array of date objects to be sorted in ascending order. This is because of lack of data persistence, and the face that 
+  // it's not practical to create new Date() objects array anytime a date sorting function is called. 
+
+  // ********** DATE HELPER FUNCTIONS ************
+
+  // JSON data uses YYYY-MM-DD format
+  function getDay(dateStr){
+    return parseInt(dateStr.slice(8))
+  }
+  function getMonth(dateStr){
+    return parseInt(dateStr.slice(5, 7))
+  }
+  function getEngMonth(dateStr){
+    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    let monthIndx = getMonth(dateStr)- 1; // 0 based indexing
+    return months[monthIndx];
+  }
+  function getYear(dateStr){
+    return parseInt(dateStr.slice(0, 4));
   }
 
-
-  // console.log(dateObj.getEngDate());
-  // console.log(dateObj.getDate());
 
 
 
@@ -104,12 +130,19 @@ document.addEventListener("DOMContentLoaded", () => {
   (6) otherwise, response.json() is returned, which is a promise-type method as well ==>
   (7) in an external function, getJasonData() is called ==>
   (8) the response.json() return value is handled as a promise by another .then() method ==>
-  (9) .then() resolves the promise into a response that is the data in json format ==>
+  (9) .then() resolves the promise into a response that is the data in JSON format ==>
   (10) data is manipulated internally depending on use case 
   {END SEQUENCE 2}
   **************/
 
   const url = "./us_senators.json";
+
+  // NOTE: In this project, we used the Fetch API built into Javascript to retrieve and process the JSON data within
+  // the promise-type method .then(), which resolves the promise returned by Fetch into actual data. This means that
+  // JSON data isn't stored in a single array, it is extracted and then discarded within every processing function 
+  // containing the fetch().then().catch(). It is not persistently stored, so it cannot be repeatedly accessed. Ideally
+  // we would have filtering/sorting functions that simply creates a reduced array copy of the JSON data based on certain
+  // conditions (e.g. Full array of JSON objects ==> Array of JSON objects with party parameter value of "Democrat").
 
   function getJsonData(){
   return fetch(url).then(response => {
@@ -125,8 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }).catch(error => {console.log(`Fetching data failed ==> ${error}`)}) // Error instance is caught and message is displayed
   }
 
-  // Due to the nature of the fetch API, the Json data can't be stored in a single variable unless explicitly defined in JavaScript.
-  // We resolve each returned promise separately to extract the Json data and handle it according to the function's purpose.
+  // Due to the nature of the fetch API, the JSON data can't be stored in a single variable unless explicitly defined in JavaScript.
+  // We resolve each returned promise separately to extract the JSON data and handle it according to the function's purpose.
 
   // *************** CREATE AND DISPLAY CARDS *************
 
@@ -197,8 +230,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // *** Default, all cards are shown, entire data array is passed through the createCardList() function ***
   function showAllCards(){
-    // .then() method passes forward data, which is the json data extracted from the previous Fetch request with response.json()
-    // a custom callback function will be made to manipulate the json data 
+    // .then() method passes forward data, which is the JSON data extracted from the previous Fetch request with response.json()
+    // a custom callback function will be made to manipulate the JSON data 
     getJsonData().then(data => {
 
       senatorsArr = data.objects; // grabbing array of objects, array length = 100, one for each U.S Senator
@@ -222,32 +255,33 @@ document.addEventListener("DOMContentLoaded", () => {
   function showByParty(partyName){
     getJsonData().then(data => {
       senatorsArr = data.objects;
-      senatorsRepArr = [];
+      senatorsPartyArr = [];
 
       // If the object party property has a value of a specific party ("Republican", "Democrat"), it will
       // be added to a new sorted array holding senator objects from just that party.
       for(let i = 0; i < senatorsArr.length; i++){
         
         if (senatorsArr[i].party == partyName){ 
-          senatorsRepArr.push(senatorsArr[i]);
+          senatorsPartyArr.push(senatorsArr[i]);
         }
       }
 
-      console.log(`There are ${senatorsRepArr.length} ${partyName} senators in Congress.`)
+      console.log(`There are ${senatorsPartyArr.length} ${partyName} senators in Congress.`);
 
-      createCardList(senatorsRepArr); // Create list of cards from the shortened array of senator objects sorted by party.
+      createCardList(senatorsPartyArr); // Create list of cards from the shortened array of senator objects sorted by party.
     })
   }
 
+  // "onchange" event is compatible with "select" elemtn, event is thrown when the value of an html 
+  // element is changed, such as by a select dropdown that takes on the value of the "option" child elements
   partySort.addEventListener("change", (event) => {
 
     clearCardList(); // clear the card list to reset the container space, 
                     // cards will be displayed by party only
 
-    let party = event.target.value;
-
-    // console.log("Change occured!");
-    // console.log(`Event sent by target ${event.target} with value "${event.target.value}"`)
+    // get the element that threw the event and it's selected value 
+    // note "onclick" is not compatible with "option" elements, so "change" event had to be used
+    let party = event.target.value; 
 
     if(party != "no-sort"){
       showByParty(party); // use value of option tags to call 
@@ -260,8 +294,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // **** SORT BY DATE **** 
 
-  function showFromEarliestDate(){
+  function compareDates(date1, date2){
+    if(getYear(date1) < getYear(date2)){
+      return -1; // the first date occurs in an earlier year
+    }
+    else if (getMonth(date1) < getMonth(date2)){
+      return -1
+    }
+    else if(getDay){
+      return 1; // EDITT!!!!!!!!!!
+    }
+  }
 
+  function showFromEarliestDate(dateType){
+
+    getJsonData().then((data) => {
+
+      senatorsArr = data.objects;
+
+      if (dateType = "entry"){ // sorting by earliest entry date
+
+        // offset from the end 
+        for(let endOffset = 0; endOffset < senatorsArr.length - 1; endOffset++){
+
+          let swapOccured = false; // default
+
+          for(let pos = 0; pos < senatorsArr.length; pos++){
+
+            // get start dates for current senator and next one in the array
+            let currentSenatorDate = senatorsArr[pos].startdate;
+            let nextSenatorDate = senatorsArr[pos + 1].startdate;
+
+          }
+
+        }
+
+
+      }
+
+    })
+
+    
   }
 
   //dateSort.addEventListener();
