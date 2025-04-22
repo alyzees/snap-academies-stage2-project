@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>LA TV Shows | Home</title>
-    <meta name="description" content="A Catalog of Shows Set in Los Angeles" />
+    <title>United States Senators</title>
+    <meta name="description" content="A catalog of biographic and civic information on the 100 members of the United States Senate." />
     <link rel="stylesheet" href="style.css" />
-
+    <script type="text/javascript" src="scripts.js"></script>
     <!-- Font Links -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,18 +53,18 @@
       </div>
 
       <div id="date-sort">
-        <h2>Sort by time in office</h2>
-        <select class="sort-dropdown" name="date-sort-options">
+        <h2>Sort by age</h2>
+        <select class="sort-dropdown" id="date-sort-dropdown" name="date-sort-options">
           <option value ="no-sort" class="no-sort">None</option>
-          <option value="start">Sort by Date of Entry (Earliest)</option>
-          <option value="end">Sort by Date of Exit (Soonest)</option>
+          <option value="ascending">Sort by oldest to youngest</option>
+          <option value="descending">Sort by youngest to oldest</option>
 
         </select>
       </div>
 
       <div id="name-sort">
         <h2>Sort alphabetically</h2>
-        <select class="sort-dropdown" name="date-sort-options">
+        <select class="sort-dropdown" id="alpha-sort-dropdown" name="alpha-sort-options">
           <option value ="no-sort" class="no-sort">None</option>
           <option value="first-name">Sort by First Name (A-Z)</option>
           <option value="last-name">Sort by Last Name (A-Z)</option>
@@ -75,29 +75,8 @@
     </div>
 
     <div id="card-container">
-      <!-- <div class="card rep">
-        <h2>Senator Name</h2>
-        <h3>State</h3>
-        <a href="" class="btn">Site Link</a>
-      </div>
-
-      <div class="card rep">
-        <h2>Senator Name</h2>
-        <h3>State</h3>
-        <a href="" class="btn">Site Link</a>
-      </div>
-
-      <div class="card rep">
-        <h2>Senator Name</h2>
-        <h3>State</h3>
-        <a href="" class="btn">Site Link</a>
-      </div> -->
-
-      
-
     </div>
 
     
-    <script type="text/javascript" src="scripts.js"></script>
   </body>
 </html>
