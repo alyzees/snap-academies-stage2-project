@@ -242,6 +242,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // *************** CREATE AND DISPLAY CARDS *************
 
+  // TECHNIQUE 1: Use JavaScript to access the HTML Document Object Model and create new elements. Each element is a JS object with
+  // certain properties and methods, such as classList and attribute. This option keeps a JavaScript variable copy of the HTML card
+  // elements.
   function createCard(senator){
     let senatorName = `${senator.person.firstname} ${senator.person.lastname}`;
     let senatorRank = `${senator.senator_rank_label} Senator`;
@@ -300,6 +303,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return card;
   }
 
+  // TECHNIQUE 2: Using template literals to write out the HTML that we intend to render using the parameter values of each 
+  // senator object. We can still access these elements later by id, class, or tag for event handling, so long as these labels 
+  // are specified in the HTML string literal.
   function createCardElement(senator){
 
     let senatorName = `${senator.person.firstname} ${senator.person.lastname}`;
@@ -309,7 +315,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let senatorState = `${getState(senator.state)} (${senator.state})`;
     let senatorTimeInOffice = `${getFormattedDate(senator.startdate)} - ${getFormattedDate(senator.enddate)}`;
     let senatorWebLink = senator.website;
-    let senatorFinLink = `https://www.opensecrets.org/members-of-congress/summary?cid=${senator.person.osid}`;
+    let senatorFinLink = `https://www.opensecrets.org/members-of-congress/summary?cid=${senator.person.osid}`; // append Open Secrets ID to the end of this API url 
+                                                                                                               // to retrieve the financial tracking page of each senator
 
     let card = document.createElement("div"); // create card div
     card.classList.add("card");
@@ -321,7 +328,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     else{card.classList.add("ind");}
 
-    //console.log(senatorFinLink);
 
     card.innerHTML = 
        `<h2>${senatorName}</h2>
@@ -382,7 +388,19 @@ document.addEventListener("DOMContentLoaded", () => {
   let partySort = document.getElementById("party-sort-dropdown");
   let dateSort = document.getElementById("date-sort-dropdown");
   let alphaSort = document.getElementById("date-sort-dropdown");
-  console.log(dateSort);
+
+  function resetFilterValuesExcept(elementId){
+    let sortDropdowns = document.getElementsByClassName("sort-dropdown");
+    
+    for(let i = 0; i < sortDropdowns.length; i++){
+      // For now, we are only doing one filter or sorting algorithm at a time, no compound filters.
+      // Other sorting and filter options must be reset upon another one being chosen.
+      if(sortDropdowns[i].id != elementId){
+        sortDropdowns[i].value = "no-sort"; // change value of select tag to it's default no-sort value, which makes the 
+                                            // corresponding "None" option tag appear as selected
+      }
+    }
+  }
   
 
   // ***** SORT BY POLITICAL PARTY *****
@@ -413,6 +431,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     clearCardList(); // clear the card list to reset the container space, 
                     // cards will be displayed by party only
+    resetFilterValuesExcept(event.target.id); // reset the other filters and sorters, except for currently selected filter
+
 
     // get the element that threw the event and it's selected value 
     // note "onclick" is not compatible with "option" elements, so "change" event had to be used
@@ -429,53 +449,197 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // **** SORT BY DATE **** 
 
+  // date parameters will be the "YYYY-MM-DD" format of the JSON data
   function compareDates(date1, date2){
-    if(getYear(date1) < getYear(date2)){
-      return -1; // the first date occurs in an earlier year
+
+    // earlier date is less than the most recent date
+    
+    if(getYear(date1) < getYear(date2)){ //compare years
+    
+      return -1; // date1 has an earlier year, so it's "less than" date2
     }
-    else if (getMonth(date1) < getMonth(date2)){
-      return -1
+    else if(getYear(date1) > getYear(date2)){ //compare years
+    
+      return 1; // date1 has a later year, so it's "greater than" date2
     }
-    else if(getDay){
-      return 1; // EDITT!!!!!!!!!!
+    // if neither of the above are true, the years are the same, so now we compare months
+    else if (getMonth(date1) < getMonth(date2)){ // compare months
+      return -1; // during the same year, date1 has an earlier month, so it's "less than" date2
+    }
+    else if (getMonth(date1) > getMonth(date2)){ // compare months
+      return 1; // during the same year, date1 has a later month, so it's "greater than" date2
+    }
+    // if neither of the above are true, the year and month are the same, so now we compare days
+    else if(getDay(date1) < getDay(date2)){
+      return -1; // during the same year and month, date1 has an earlier date, so it's "less than" date2
+    }
+    else if(getDay(date1) > getDay(date2)){
+      return 1; // during the same year and month, date1 has a later date, so it's "greater than" date2
+    }
+    // if nothing above is true, the year, month, and day are the
+    // same, so the dates are equal
+    else{
+      return 0; 
     }
   }
 
-  function showFromEarliestDate(dateType){
+  console.log(compareDates("2000-01-12", "1992-12-22")); // 1
+  console.log(compareDates("1890-09-06", "1890-10-21")); // -1
+  console.log(compareDates("1999-09-09", "1999-09-09")); // 0
+  console.log(compareDates("1952-08-05", "1952-08-03")); // 1
+
+  // ***********  BUBBLE SORT (SWAP SORT) ALGORITHM ***********
+  // Credits: https://www.programiz.com/dsa/bubble-sort 
+
+  /* ********** TRACE AN EXAMPLE ***********
+  let arr = [-2, 19, -5, 90, 34, 23, -91]
+
+  STEP 1: offset from end is 0, so we iterate through all unsorted elements
+  (we only count up to one minus the length since each iteration uses the current and next element)
+  
+    pos 0: compare pos 0 and pos 1 ==> -2 < 19 ==> don't swap
+    pos 1: compare pos 1 and pos 2 ==> 19 > -5 ==> swap ==> 
+      arr = [-2, -5, 19, 90, 34, 23, -91]
+    pos 2: compare pos 2 and 3 ==> 23 < 90 ==> don't swap
+    pos 3: compare pos 3 and pos 4 ==> 90 > 34 ==> swap ==>
+      arr = [-2, -5, 19, 34, 90, 23, -91] 
+    pos 4: compare pos 4 and pos 5 ==> 90 > 23 ==> swap ==>
+      arr = [-2, -5, 19, 34, 23, 90, -91] (NOTE: Here, the elements before 90 are still out of order, but that's okay! The purpose is
+                                          swapping through each position in order to get the largest element and carry it over to the end.)
+    pos 5: compare pos 5 and pos 6 ==> 90 > -91 ==> swap ==>
+      arr = [-2, -5, 19, 34, 23, -91, 90]
+
+  END OF STEP 1: Now the largest element, 90, is at the end in it's rightful place, we know because
+  it was the last element we were able to swap to the right before the array ended. Now we can move 
+  to STEP 2 and find the largest element AMONG THE UNSORTED PORTION of the array, i.e. up to the sorted 
+  elements at the end (i.e. offset increases by 1).
+  
+  STEP 2: offset from end is now 1, we iterate through all unsorted elements up to the last sorted element 
+  ...
+  END OF STEP 2: The largest element among the unsorted is 34 and has been moved up to the offest ==>
+    arr = [-2, -5, 19, 23, -91, 34, 90]
+
+  STEP 3: offset from end is now 2, we iterate through all unsorted elements up to the last two sorted element 
+  ...
+  END OF STEP 2: The largest element among the unsorted is 23 and has been moved up to the offset ==>
+    arr = [-2, -5, 19, -91, 23, 34, 90]
+
+  STEP 4: offset from end is now 3, we iterate through all unsorted elements up to the last three sorted element 
+  ...
+  END OF STEP 4: The largest element among the unsorted is 19 and has been moved up to the offset ==>
+    arr = [-2, -5, -91, 19, 23, 34, 90]
+
+  STEP 5: offset from end is now 4, we iterate through all unsorted elements up to the last four sorted element 
+  ...
+  END OF STEP 5: The largest element among the unsorted is -2 and has been moved up to the offset ==>
+    arr = [-5, -91, -2, 19, 23, 34, 90]
+
+  STEP 6: offset from end is now 5, we iterate through all unsorted elements up to the last five sorted element 
+  ...
+  END OF STEP 6: The largest element among the unsorted is -5 and has been moved up to the offset ==>
+    arr = [-91, -5, -2, 19, 23, 34, 90]
+
+  STEP 7: length of arr = 7, and the offset is only incremented up to arr.length - 1, so now that offset is 6, function breaks
+  ARRAY IS SORTED!!! [-91, -5, -2, 19, 23, 34, 90]
+  */
+
+ 
+  /*  // ******** ALGORITHM PSUEDOCODE ************
+  // since every iteration sorts the greatest element
+  for (all offsets from 0 to the length of the array - 1){
+
+    for(all elements from 0 to the offset point){ // repeat and look at next two adjacent elements
+      if(current element > next element){
+        swap position of current and next element
+      }
+      else{
+        move on to next element  
+      }
+    } // continues until the greatest unsorted element is placed at the end
+  }
+  */
+
+  // NOTE: Bubble sort can be inefficient for extremely 
+
+  function showInAscendingBirthdays(){ //earliest to most recent birthdays, oldest to youngest
 
     getJsonData().then((data) => {
+      senatorsArr = data.objects; // get senators in a single array of objects
 
-      senatorsArr = data.objects;
+      // offset from the end 
+      for(let endOffset = 0; endOffset < senatorsArr.length - 1; endOffset++){
 
-      if (dateType = "entry"){ // sorting by earliest entry date
+        let currentYoungestSenator; // each step will move the oldest senator to the end 
 
-        // offset from the end 
-        for(let endOffset = 0; endOffset < senatorsArr.length - 1; endOffset++){
+        //  iterate through all elements up to the offset point ==> for each offest iteration, one element will be in it's rightful sorted place at the end
+        for(let pos = 0; pos < senatorsArr.length - endOffset - 1; pos++){ // note we COUNT up to length - 1 because we are comparing adjacent elements
 
-          let swapOccured = false; // default
+          // temporary variables holding adjacent objects
+          let currentSenator = senatorsArr[pos]; // senator object in current position
+          let nextSenator = senatorsArr[pos + 1]; // senator object in next position
 
-          for(let pos = 0; pos < senatorsArr.length; pos++){
+          // compare dates
+          if(compareDates(currentSenator.person.birthday, nextSenator.person.birthday) == 1){ // current senator date occurs later than next senator date, so it should be swapped to the next positio
+            
+            senatorsArr[pos] = nextSenator; // place lesser date in current position
+            senatorsArr[pos + 1] = currentSenator; // place the saved greater date in next position
 
-            // get start dates for current senator and next one in the array
-            let currentSenatorDate = senatorsArr[pos].startdate;
-            let nextSenatorDate = senatorsArr[pos + 1].startdate;
-
+            currentYoungestSenator = currentSenator; // TRACKING
+          }
+          else{ // TRACKING
+            currentYoungestSenator = nextSenator; // next senator has either a great or equal to date than the first
           }
 
         }
-
-
+        console.log(`Senator ${currentYoungestSenator.person.name} w/ b-day ${currentYoungestSenator.person.birthday} has the latest b-day, is youngest, and was moved to the end!`);  
       }
-
+      createCardList(senatorsArr); // show by sorted list 
     })
-
-    
   }
 
-  //dateSort.addEventListener();
+  function showInDescendingBirthdays(){ //most recent to earliest birthdays, youngest to oldest
 
-  showAllCards();
+    getJsonData().then((data) => {
+      senatorsArr = data.objects; // get senators in a single array of objects
+      // offset from the end 
+      for(let endOffset = 0; endOffset < senatorsArr.length - 1; endOffset++){
+        for(let pos = 0; pos < senatorsArr.length - endOffset - 1; pos++){ 
+          // temporary variables holding adjacent objects
+          let currentSenator = senatorsArr[pos]; // senator object in current position
+          let nextSenator = senatorsArr[pos + 1]; // senator object in next position
+          // compare dates
+          if(compareDates(currentSenator.person.birthday, nextSenator.person.birthday) == -1){ // current senator has an earlier birthday than the next senator, positions are swapepd
+            // swap positions
+            senatorsArr[pos] = nextSenator; 
+            senatorsArr[pos + 1] = currentSenator; 
+          }
+        }        
+      }
+      createCardList(senatorsArr); // show by sorted list 
+    })
 
+  }
+
+  dateSort.addEventListener("change", (event) => {
+
+    clearCardList(); // clear the cards in the container space from previous filters
+    resetFilterValuesExcept(event.target.id); // reset the other filters and sorters, except for currently selected filter
+
+    let order = event.target.value;
+
+    if(order == "ascending"){
+      showInAscendingBirthdays();
+    }
+    else if(order == "descending"){
+      showInDescendingBirthdays();
+    }
+    else{
+      showAllCards(); // no-sort option selected, reset to all cards
+    }
+
+  });
+
+  showAllCards(); // Begin by showing all cards.
   
 
 })
