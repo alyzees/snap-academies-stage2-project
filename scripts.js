@@ -91,33 +91,8 @@
 // loaded, this prevents refercing non-existing elements and getting null values.
 
 document.addEventListener("DOMContentLoaded", () => {
-  
-  // Opted to use functions to get and format date infromation from each senator obejct rather than creating a parallel
-  // array of date objects to be sorted in ascending order. This is because of lack of data persistence, and the face that 
-  // it's not practical to create new Date() objects array anytime a date sorting function is called. 
 
-  // ********** DATE HELPER FUNCTIONS ************
-
-  // JSON data uses YYYY-MM-DD format
-  function getDay(dateStr){
-    return parseInt(dateStr.slice(8))
-  }
-  function getMonth(dateStr){
-    return parseInt(dateStr.slice(5, 7))
-  }
-  function getEngMonth(dateStr){
-    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    let monthIndx = getMonth(dateStr)- 1; // 0 based indexing
-    return months[monthIndx];
-  }
-  function getYear(dateStr){
-    return parseInt(dateStr.slice(0, 4));
-  }
-
-
-
-
-  // *************** FETCH DATA ******************
+  // ************************* FETCH DATA *****************************
 
   /* ***** HOW FETCHING JSON DATA WORKS ******
   {START SEQUENCE} 
@@ -135,14 +110,14 @@ document.addEventListener("DOMContentLoaded", () => {
   {END SEQUENCE 2}
   **************/
 
-  const url = "./us_senators.json";
-
-  // NOTE: In this project, we used the Fetch API built into Javascript to retrieve and process the JSON data within
+  // IMPORTANT NOTE: In this project, we used the Fetch API built into Javascript to retrieve and process the JSON data within
   // the promise-type method .then(), which resolves the promise returned by Fetch into actual data. This means that
   // JSON data isn't stored in a single array, it is extracted and then discarded within every processing function 
   // containing the fetch().then().catch(). It is not persistently stored, so it cannot be repeatedly accessed. Ideally
   // we would have filtering/sorting functions that simply creates a reduced array copy of the JSON data based on certain
   // conditions (e.g. Full array of JSON objects ==> Array of JSON objects with party parameter value of "Democrat").
+
+  const url = "./us_senators.json";
 
   function getJsonData(){
   return fetch(url).then(response => {
@@ -161,13 +136,119 @@ document.addEventListener("DOMContentLoaded", () => {
   // Due to the nature of the fetch API, the JSON data can't be stored in a single variable unless explicitly defined in JavaScript.
   // We resolve each returned promise separately to extract the JSON data and handle it according to the function's purpose.
 
+
+  // ********************* DATE HELPER FUNCTIONS *************************
+
+  // Opted to use functions to get and format date infromation from each senator obejct rather than creating a parallel
+  // array of date objects to be sorted in ascending order. This is because of lack of data persistence, and the face that 
+  // it's not practical to create new Date() objects array anytime a date sorting function is called. 
+
+  // JSON data uses YYYY-MM-DD format
+  function getDay(dateStr){
+    return parseInt(dateStr.slice(8))
+  }
+
+  function getMonth(dateStr){
+    return parseInt(dateStr.slice(5, 7))
+  }
+
+  function getYear(dateStr){
+    return parseInt(dateStr.slice(0, 4));
+  }
+
+  function getEngMonth(dateStr){
+    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    let monthIndx = getMonth(dateStr)- 1; // 0 based indexing
+    return months[monthIndx];
+  }
+
+  function getFormattedDate(dateStr){
+    return `${getEngMonth(dateStr)} ${getDay(dateStr)}, ${getYear(dateStr)}`;
+  }
+
+
+  // **************************** STATE HELPER FUNCTIONS ********************************
+
+  // This is a JSON object literal. This is a JavaScript object structured in JSON format, and therefore they key-value pairs
+  // can be accessed with this same script. This is a small enough set to be written out as an object letter, for larger datasets
+  // like the Senators dataset require fetching or importing the JSON data.
+  const statesObj = {
+    "AL": "Alabama",
+    "AK": "Alaska",
+    "AS": "American Samoa",
+    "AZ": "Arizona",
+    "AR": "Arkansas",
+    "CA": "California",
+    "CO": "Colorado",
+    "CT": "Connecticut",
+    "DE": "Delaware",
+    "DC": "District Of Columbia",
+    "FM": "Federated States Of Micronesia",
+    "FL": "Florida",
+    "GA": "Georgia",
+    "GU": "Guam",
+    "HI": "Hawaii",
+    "ID": "Idaho",
+    "IL": "Illinois",
+    "IN": "Indiana",
+    "IA": "Iowa",
+    "KS": "Kansas",
+    "KY": "Kentucky",
+    "LA": "Louisiana",
+    "ME": "Maine",
+    "MH": "Marshall Islands",
+    "MD": "Maryland",
+    "MA": "Massachusetts",
+    "MI": "Michigan",
+    "MN": "Minnesota",
+    "MS": "Mississippi",
+    "MO": "Missouri",
+    "MT": "Montana",
+    "NE": "Nebraska",
+    "NV": "Nevada",
+    "NH": "New Hampshire",
+    "NJ": "New Jersey",
+    "NM": "New Mexico",
+    "NY": "New York",
+    "NC": "North Carolina",
+    "ND": "North Dakota",
+    "MP": "Northern Mariana Islands",
+    "OH": "Ohio",
+    "OK": "Oklahoma",
+    "OR": "Oregon",
+    "PW": "Palau",
+    "PA": "Pennsylvania",
+    "PR": "Puerto Rico",
+    "RI": "Rhode Island",
+    "SC": "South Carolina",
+    "SD": "South Dakota",
+    "TN": "Tennessee",
+    "TX": "Texas",
+    "UT": "Utah",
+    "VT": "Vermont",
+    "VI": "Virgin Islands",
+    "VA": "Virginia",
+    "WA": "Washington",
+    "WV": "West Virginia",
+    "WI": "Wisconsin",
+    "WY": "Wyoming"
+  } // Credits: https://gist.github.com/mshafrir/2646763
+
+  function getState(abbrev){ // capitalized abbreviation (e.g. CA ==> California)
+    return statesObj[abbrev];
+  }
+
+  // console.log(getState("WY"));
+
   // *************** CREATE AND DISPLAY CARDS *************
 
   function createCard(senator){
     let senatorName = `${senator.person.firstname} ${senator.person.lastname}`;
+    let senatorRank = `${senator.senator_rank_label} Senator`;
+    let senatorBirthday = `Born on ${getFormattedDate(senator.person.birthday)}`;
     let senatorParty = senator.party;
-    let senatorState = senator.state;
-    let senatorTimeInOffice = `${senator.startdate} - ${senator.enddate}`;
+    let senatorState = `${getState(senator.state)} (${senator.state})`;
+    let senatorTimeInOffice = `In office ${getFormattedDate(senator.startdate)} through ${getFormattedDate(senator.enddate)}`;
     let senatorWebLink = senator.website;
 
     let card = document.createElement("div");
@@ -186,6 +267,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let party = document.createElement("h3");
     party.innerHTML = senatorParty;
 
+    let rank = document.createElement("h3");
+    rank.innerHTML = senatorRank;
+
     let state = document.createElement("p");
     state.innerHTML = senatorState;
     state.classList.add("state");
@@ -193,6 +277,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let office = document.createElement("p");
     office.innerHTML = senatorTimeInOffice;
     office.classList.add("office");
+
+    let birthday = document.createElement("p");
+    birthday.innerHTML = senatorBirthday;
+    birthday.classList.add("birthday");
 
     let websiteBtn = document.createElement("a");
     websiteBtn.setAttribute("href", senatorWebLink);
@@ -203,20 +291,66 @@ document.addEventListener("DOMContentLoaded", () => {
     // Append all components to card div
     card.appendChild(title);
     card.appendChild(party);
+    card.appendChild(rank);
     card.appendChild(state);
     card.appendChild(office);
+    card.appendChild(birthday);
     card.appendChild(websiteBtn)
+
+    return card;
+  }
+
+  function createCardElement(senator){
+
+    let senatorName = `${senator.person.firstname} ${senator.person.lastname}`;
+    let senatorRank = senator.senator_rank_label;
+    let senatorBirthday = getFormattedDate(senator.person.birthday);
+    let senatorParty = senator.party;
+    let senatorState = `${getState(senator.state)} (${senator.state})`;
+    let senatorTimeInOffice = `${getFormattedDate(senator.startdate)} - ${getFormattedDate(senator.enddate)}`;
+    let senatorWebLink = senator.website;
+    let senatorFinLink = `https://www.opensecrets.org/members-of-congress/summary?cid=${senator.person.osid}`;
+
+    let card = document.createElement("div"); // create card div
+    card.classList.add("card");
+    if (senatorParty == "Republican"){
+      card.classList.add("rep");
+    }
+    else if (senatorParty == "Democrat"){
+      card.classList.add("dem");
+    }
+    else{card.classList.add("ind");}
+
+    //console.log(senatorFinLink);
+
+    card.innerHTML = 
+       `<h2>${senatorName}</h2>
+        <p class="party">${senatorParty}<p>
+        <p class="state">${senatorRank} Senator of ${senatorState}</p>
+        <p class="office"> In office ${senatorTimeInOffice}</p>
+        <p class="birthday">Born on ${senatorBirthday}</p>
+        <div class="btn-group">
+          <a href="${senatorFinLink}" target="_blank" class="btn">Track Finances</a>
+          <a href="${senatorWebLink}" target="_blank" class="btn">Official Website</a>
+        </div>
+        `;
 
     return card;
   }
 
   function createCardList(senatorList){
     let container = document.getElementById("card-container"); // access card container
-      for(let i = 0; i < senatorList.length; i++){
 
-        let card = createCard(senatorList[i])
-        container.appendChild(card); // append card to container
-      }
+    for(let i = 0; i < senatorList.length; i++){
+
+      // Technique 1
+      // let card = createCard(senatorList[i]); //create card 
+
+      //Technique 2
+      let card = createCardElement(senatorList[i]);
+
+      container.appendChild(card); // append card to container
+    }
   }
 
   function clearCardList(){
@@ -238,7 +372,8 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(`Json data: ${data}`)
 
       console.log(`There are ${senatorsArr.length} senators in Congress.`)
-      createCardList(senatorsArr); // pass an array with all 100 objects to the createCardList function to display all members of the Senators  
+      createCardList(senatorsArr); // pass an array with all 100 objects to the createCardList function to display all members of the Senators 
+      
   })
   }
 

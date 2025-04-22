@@ -46,17 +46,37 @@ h2{
   margin: 10px;
 }
 
+.card p{
+  margin: 10px 0px;
+}
+
 .rep{
   border-color: #a8241b;
 }
+.rep .party{
+  color: #a8241b;
+}
+
 .dem{
   border-color: #123478;
+}
+
+.dem .party{
+  color: #123478;
 }
 
 .ind{
   border-color: #999b9e;
 }
 
+.ind .party{
+  color: #999b9e;
+}
+
+.party{
+  font-size: 22px;
+  font-weight:bold;
+}
 .btn{
   background-color: #42a13b;
   color: #FFFFFF;
@@ -64,8 +84,8 @@ h2{
   text-decoration: none;
   color: FFFFFF;
   border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 22px;
+  padding: 10px 15px;
+  font-size: 18px;
   cursor: pointer;
   margin: 5px;
   float: right;
