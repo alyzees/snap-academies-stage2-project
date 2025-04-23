@@ -1,5 +1,20 @@
 # SEA Stage 2 - Data Catalog Project
 
+## Final Stage 2 Project - Catalog of United States Senators
+
+This project is a simple catalog of biographical and civic information on the current 100 members of the United States senate. Using a public API from GovTrack, I extracted the JSON data with extensive information on Senator and used DOM Manipulation to create simple cards to display relevant information and metrics. For efficient and accessible display, I created three sorting and filter features. These features categorize and label the senators by important characteristics: age, name, and political party.
+
+### Resources Used
+- [U.S Senators Dataset]("https://github.com/jdorfman/awesome-json-datasets")
+- [U.S States JSON]("https://gist.github.com/mshafrir/2646763")
+- [Bubble Sort Algorithm]("https://www.programiz.com/dsa/bubble-sort")
+- [Array .sort() Method]("https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
+- [Lexicographical Comparison]("https://masteringjs.io/tutorials/fundamentals/compare-strings")
+
+### <video src="./assets/Catalog_project.mp4" width="420" height="350" controls></video>
+
+---
+
 This repository contains the instructions, requirements, and starter code for Stage Two of the Snap Engineering Academy application process.
 
 ---

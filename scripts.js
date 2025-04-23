@@ -119,6 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const url = "./us_senators.json";
 
+  // Credits: https://github.com/jdorfman/awesome-json-datasets
   function getJsonData(){
   return fetch(url).then(response => {
     if(!response.ok){ // A Response instance has the boolean property value ok, that returns true if 
@@ -652,6 +653,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // return 1) or leave the elements alone (a == b, return 0). Note a in comparison to b is just for the purpose of 
       // sorting, the meaning behind the values of the objects a and b do not have to numerically follow this rule.
       
+      // Credits: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
       let sortedArr = senatorsArr.sort((a, b) => {
 
         // a and b are senator objects
@@ -673,6 +675,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // e.g.) 'John' < 'Susan'; // true, because 'J' comes before 'S', i.e. has a lower ASCII value ('J' = 74, 'S' = 83)
         // e.g.) 'Amy' < 'Amelia; // false, because first two letters are the same but letter at third poition in 'Amy', i.e. 'y',
                                   // comes after letter in third position in 'Amelia', i.e. 'e', even if 'Amy' is a shorter string
+        // Credits: https://masteringjs.io/tutorials/fundamentals/compare-strings
+        // https://en.wikipedia.org/wiki/ASCII 
 
         if(senName1 < senName2){ // first senator's name comes before in alphabetical order
           return -1;
