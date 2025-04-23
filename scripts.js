@@ -374,10 +374,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // a custom callback function will be made to manipulate the JSON data 
     getJsonData().then(data => {
 
-      senatorsArr = data.objects; // grabbing array of objects, array length = 100, one for each U.S Senator
-      console.log(`Json data: ${data}`)
+      let senatorsArr = data.objects; // grabbing array of objects, array length = 100, one for each U.S Senator
+      // console.log(`Json data: ${data}`)
+      // console.log(`There are ${senatorsArr.length} senators in Congress.`)
 
-      console.log(`There are ${senatorsArr.length} senators in Congress.`)
       createCardList(senatorsArr); // pass an array with all 100 objects to the createCardList function to display all members of the Senators 
       
   })
@@ -385,9 +385,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* *********** FILTERING AND SORTING FUNCTIONS ************ */
 
+  // GET SORTING DROPDOWN ELEMENTS
   let partySort = document.getElementById("party-sort-dropdown");
   let dateSort = document.getElementById("date-sort-dropdown");
-  let alphaSort = document.getElementById("date-sort-dropdown");
+  let alphaSort = document.getElementById("alpha-sort-dropdown");
 
   function resetFilterValuesExcept(elementId){
     let sortDropdowns = document.getElementsByClassName("sort-dropdown");
@@ -407,8 +408,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showByParty(partyName){
     getJsonData().then(data => {
-      senatorsArr = data.objects;
-      senatorsPartyArr = [];
+      let senatorsArr = data.objects;
+      let senatorsPartyArr = [];
 
       // If the object party property has a value of a specific party ("Republican", "Democrat"), it will
       // be added to a new sorted array holding senator objects from just that party.
@@ -419,7 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      console.log(`There are ${senatorsPartyArr.length} ${partyName} senators in Congress.`);
+      // console.log(`There are ${senatorsPartyArr.length} ${partyName} senators in Congress.`);
 
       createCardList(senatorsPartyArr); // Create list of cards from the shortened array of senator objects sorted by party.
     })
@@ -483,10 +484,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  console.log(compareDates("2000-01-12", "1992-12-22")); // 1
-  console.log(compareDates("1890-09-06", "1890-10-21")); // -1
-  console.log(compareDates("1999-09-09", "1999-09-09")); // 0
-  console.log(compareDates("1952-08-05", "1952-08-03")); // 1
+  // console.log(compareDates("2000-01-12", "1992-12-22")); // 1
+  // console.log(compareDates("1890-09-06", "1890-10-21")); // -1
+  // console.log(compareDates("1999-09-09", "1999-09-09")); // 0
+  // console.log(compareDates("1952-08-05", "1952-08-03")); // 1
 
   // ***********  BUBBLE SORT (SWAP SORT) ALGORITHM ***********
   // Credits: https://www.programiz.com/dsa/bubble-sort 
@@ -591,7 +592,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
         }
-        console.log(`Senator ${currentYoungestSenator.person.name} w/ b-day ${currentYoungestSenator.person.birthday} has the latest b-day, is youngest, and was moved to the end!`);  
+        console.log(`Senator ${currentYoungestSenator.person.name} with birthdate ${currentYoungestSenator.person.birthday} is sorted and placed at the end.`);  
       }
       createCardList(senatorsArr); // show by sorted list 
     })
@@ -600,7 +601,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function showInDescendingBirthdays(){ //most recent to earliest birthdays, youngest to oldest
 
     getJsonData().then((data) => {
-      senatorsArr = data.objects; // get senators in a single array of objects
+      let senatorsArr = data.objects; // get senators in a single array of objects
       // offset from the end 
       for(let endOffset = 0; endOffset < senatorsArr.length - 1; endOffset++){
         for(let pos = 0; pos < senatorsArr.length - endOffset - 1; pos++){ 
@@ -628,10 +629,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let order = event.target.value;
 
     if(order == "ascending"){
-      showInAscendingBirthdays();
+      showInAscendingBirthdays(); // call ascending (oldest to youngest) function
     }
     else if(order == "descending"){
-      showInDescendingBirthdays();
+      showInDescendingBirthdays(); // call descending (youngest to oldest) function
     }
     else{
       showAllCards(); // no-sort option selected, reset to all cards
@@ -639,7 +640,76 @@ document.addEventListener("DOMContentLoaded", () => {
 
   });
 
-  showAllCards(); // Begin by showing all cards.
+  function showByAlphabeticalOrder(nameType){
+    getJsonData().then((data) => {
+
+      let senatorsArr = data.objects;
+
+      // ********* .sort() METHOD FOR ARRAYS ************
+      // The sort functions uses a sorting technique to place all the elements in ascending/descending order. Accepts a 
+      // callback function that is run through each iteration of comparison in order to sort objects a and b appropriately. 
+      // The function should specify the condition to place b after a (meaning a < b, return -1), a after b (meaning a > b, 
+      // return 1) or leave the elements alone (a == b, return 0). Note a in comparison to b is just for the purpose of 
+      // sorting, the meaning behind the values of the objects a and b do not have to numerically follow this rule.
+      
+      let sortedArr = senatorsArr.sort((a, b) => {
+
+        // a and b are senator objects
+        let senName1; 
+        let senName2;
+
+        if(nameType == "first-name"){ // sort by firstname
+          senName1 = a.person.firstname;
+          senName2 = b.person.firstname;
+        }
+        else if(nameType == "last-name"){ // sort by last name
+          senName1 = a.person.lastname;
+          senName2 = b.person.lastname;
+        }
+
+        // Operators on strings indicate comparing strings Lexicographically, meanign in order of the dictionary. This is based
+        // off of the numerical value of each string based on the ASCII codes, which assign numerical valeues to each character
+        // in the alphabet, numbers, and special characters.
+        // e.g.) 'John' < 'Susan'; // true, because 'J' comes before 'S', i.e. has a lower ASCII value ('J' = 74, 'S' = 83)
+        // e.g.) 'Amy' < 'Amelia; // false, because first two letters are the same but letter at third poition in 'Amy', i.e. 'y',
+                                  // comes after letter in third position in 'Amelia', i.e. 'e', even if 'Amy' is a shorter string
+
+        if(senName1 < senName2){ // first senator's name comes before in alphabetical order
+          return -1;
+        }
+        else if(senName1 > senName2){ // first senator's name comes after in alphabetical order
+          return 1; 
+        }
+        else{ // The names are exactly the same and order doesn't need to be changed.
+              // May be helpful to compare last names when two senators have the same first name. 
+          return 0;
+        }
+
+      });
+
+      createCardList(sortedArr);
+
+    });
+  }
+
+  alphaSort.addEventListener("change", (event) => {
+    clearCardList(); // clear the cards in the container space from previous filters
+    resetFilterValuesExcept(event.target.id); // reset the other filters and sorters, except for currently selected filter
+
+    let nameType = event.target.value;
+
+    if(nameType != "no-sort"){
+      showByAlphabeticalOrder(nameType); // show by indicated name type on option tag values
+    }
+    else{
+      showAllCards(); // no-sort selected, reset to show all cards
+    }
+
+  });
+
+
+
+  showAllCards(); // Begin by showing all cards on the page!
   
 
 })
