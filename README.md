@@ -2,7 +2,7 @@
 
 ## Final Stage 2 Project - Catalog of United States Senators
 
-This project is a simple catalog of biographical and civic information on the current 100 members of the United States senate. Using a public API from GovTrack, I extracted the JSON data with extensive information on Senator and used DOM Manipulation to create simple cards to display relevant information and metrics. For efficient and accessible display, I created three sorting and filter features. These features categorize and label the senators by important characteristics: age, name, and political party.
+This project is a simple catalog of biographical and civic information on the current 100 members of the United States senate. Using a public API from GovTrack, I extracted JSON data containing parameters of information on each U.S. Senator and used DOM Manipulation to create a simple interface of easy-to-read cards displaying relevant data points and metrics for each U.S Senator. For efficient and accessible display, I created three sorting and filter features. These features categorize and label the senators by important characteristics: age, name, and political party.
 
 ### Resources Used
 - [U.S Senators Dataset]("https://github.com/jdorfman/awesome-json-datasets")
